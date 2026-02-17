@@ -66,8 +66,8 @@ sales_df.join(stores_df, sales_df.store_id == stores_df.id, "right").show()
 # COMMAND ----------
 
 """
-inner join, return only records where both dataframes match
-inner is default and can be omitted as the 3rd argument, but I included it here to be explicity
+inner join, return only records in common to both dataframes
+inner is default join type and can be omitted as the 3rd argument, but I included it here to be explicit
 """
 sales_df.join(stores_df, sales_df.store_id == stores_df.id, 'inner').show()
 
@@ -81,7 +81,7 @@ sales_df.join(stores_df, sales_df.store_id == stores_df.id, 'fullouter').show()
 # COMMAND ----------
 
 """
-return records from the left dataframe which have NO match in the right dataframe
+To return records from the left dataframe, stores, which have NO match in the right dataframe, sales
 use 'left_anti' join
 """
 sales_df.join(stores_df, sales_df.store_id == stores_df.id, 'left_anti').show()
@@ -167,7 +167,6 @@ stores_df_1.union(stores_df_1).display()
 # COMMAND ----------
 
 """
-union does not need to imported, its part of the dataframe api
 This will error because the dataframes need the same number of coulums to union
 Union does not care about column names, just quantity must match
 """
@@ -181,7 +180,6 @@ stores_df_1.union(stores_df_2).display()
 # COMMAND ----------
 
 """
-union does not need to imported, its part of the dataframe api
 We need an extra column for the numbers of columns to match
 We can 'fudge' this by adding a column to stores_df_2
 """
@@ -216,9 +214,9 @@ stores_df_1.unionByName(stores_df_2, allowMissingColumns=True).display()
 """
 get table data paths
 """
-population_path = 'powerplatform_administration_development_2.pyspark_learning.countries_population'
-region_path = 'powerplatform_administration_development_2.pyspark_learning.country_regions'
-subregion_path = 'powerplatform_administration_development_2.pyspark_learning.country_sub_regions'
+population_path = 'workspace.pyspark_learning.countries_population'
+region_path = 'workspace.pyspark_learning.country_regions'
+subregion_path = 'workspace.pyspark_learning.country_sub_regions'
 
 # COMMAND ----------
 
@@ -310,38 +308,38 @@ df_consolidated_refactored.display()
 """
 create table
 """
-df_consolidated_refactored.write.saveAsTable('powerplatform_administration_development_2.pyspark_learning.countries_consolidated', mode="overwrite")
+df_consolidated_refactored.write.saveAsTable('workspace.pyspark_learning.countries_consolidated', mode="overwrite")
 
 # COMMAND ----------
 
 """
 verify table
 """
-spark.read.table('powerplatform_administration_development_2.pyspark_learning.countries_consolidated').display()
+spark.read.table('workspace.pyspark_learning.countries_consolidated').display()
 
 # COMMAND ----------
 
 """
 verify via sql
 """
-spark.sql('SELECT * FROM powerplatform_administration_development_2.pyspark_learning.countries_consolidated').display()
+spark.sql('SELECT * FROM workspace.pyspark_learning.countries_consolidated').display()
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC -- clean the null records from my tables permanently so I dont need to deal with it again
-# MAGIC DELETE FROM powerplatform_administration_development_2.pyspark_learning.country_regions WHERE id IS NULL;
+# MAGIC DELETE FROM workspace.pyspark_learning.country_regions WHERE id IS NULL;
 
 # COMMAND ----------
 
-spark.read.table('powerplatform_administration_development_2.pyspark_learning.country_regions').display()
+spark.read.table('workspace.pyspark_learning.country_regions').display()
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC -- clean the null records from my tables permanently so I dont need to deal with it again
-# MAGIC DELETE FROM powerplatform_administration_development_2.pyspark_learning.country_sub_regions WHERE id is NULL;
+# MAGIC DELETE FROM workspace.pyspark_learning.country_sub_regions WHERE id is NULL;
 
 # COMMAND ----------
 
-spark.read.table('powerplatform_administration_development_2.pyspark_learning.country_sub_regions').display()
+spark.read.table('workspace.pyspark_learning.country_sub_regions').display()

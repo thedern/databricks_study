@@ -1,6 +1,11 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC ## Create Dataframes from Python Objects
+
+# COMMAND ----------
+
 """
-list of lists
+Create some data from a list of lists
 """
 data_1 = [
     ["alice", 30, "london"],
@@ -13,6 +18,7 @@ data_1 = [
 
 """
 create a dataframe with no column mames
+column names will be underscores with numbers
 """
 df_no_name = spark.createDataFrame(data_1)
 df_no_name.display()
@@ -30,7 +36,8 @@ df_col_names.display()
 # COMMAND ----------
 
 """
-list of dictionaries
+Just like creating dataframe with a list of lists, one can
+create data via a list of dictionary objects
 """
 data_2 = [
     {"name": 'alice', 'age': 30, 'city': 'london'},
@@ -43,15 +50,17 @@ data_2 = [
 
 """
 Below creates a 'typed' schema using ddl formating
+in ddl formatting the schema is list a comma delimited string
 """
 schema_1 = "name string, age integer, city string"
+
 df_col_names_2 = spark.createDataFrame(data_1, schema=schema_1)
 df_col_names_2.display()
 
 # COMMAND ----------
 
 """
-With a dict, the elements are key/value pairs so column names are determined by createDataFrame
+With a dict, the elements are key/value pairs so column names are determined by createDataFrame and it looking at the keys
 NOTE: dbx will infer the types as no schema is provided
 """
 df_dict= spark.createDataFrame(data_2)
@@ -63,7 +72,10 @@ df_dict.display()
 """
 You can convert any python data type to a data frame, even a tuple
 """
+
 tuple_challenge = ((54, 'dave'), (18,'sandy'), (90, 'ed'))
 print(type(tuple_challenge))
+
 schema_2 =  "age integer, name string"
+
 spark.createDataFrame(tuple_challenge, schema=schema_2).display()

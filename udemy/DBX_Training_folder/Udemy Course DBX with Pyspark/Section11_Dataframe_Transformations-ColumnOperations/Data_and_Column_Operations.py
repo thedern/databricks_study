@@ -1,12 +1,12 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Notebook Contents
-# MAGIC - ## Select by reference and column object
-# MAGIC - ## selectExpr()
-# MAGIC - ## withColumn()
-# MAGIC - ## withColumns()
-# MAGIC - ## Renaming Columns - withColumnRenamed(); withColumnsRenamed(); alias()
-# MAGIC - ## Changing data types - cast()
+# MAGIC ## Notebook Contents
+# MAGIC - ### Select by reference and column object
+# MAGIC - ### selectExpr()
+# MAGIC - ### withColumn()
+# MAGIC - ### withColumns()
+# MAGIC - ### Renaming Columns - withColumnRenamed(); withColumnsRenamed(); alias()
+# MAGIC - ### Changing data types - cast()
 
 # COMMAND ----------
 
@@ -17,9 +17,11 @@
 
 """
 Import data for use in the notebook exercises
+Create schema
+Generate dataframe from the schema
 """
 
-file_path = '/Volumes/powerplatform_administration_development_2/powerplatform_administration/raw_data_files/pyspark/countries_dataset/csv_data/countries_population/countries_population.csv'
+file_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/countries_dataset/csv_data/countries_population/countries_population.csv'
 
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
 
@@ -44,29 +46,30 @@ countries_df.display()
 
 # MAGIC %sql
 # MAGIC -- create a schema, syntax is catalog.schema name
-# MAGIC CREATE SCHEMA powerplatform_administration_development_2.pyspark_learning
+# MAGIC CREATE SCHEMA workspace.pyspark_learning_2
 
 # COMMAND ----------
 
 """
 From data frame (created via the csv import), create countries_population table in pyspark learning schema
 """
-countries_df.write.saveAsTable('powerplatform_administration_development_2.pyspark_learning.countries_population', mode='overwrite')
+countries_df.write.saveAsTable('workspace.pyspark_learning.countries_population', mode='overwrite')
 
 # COMMAND ----------
 
 """
 verify table contents
-remember thats spark.sql returns a dataframe object; therefore
+remember thats spark.sql returns a dataframe object; therefore display or show is needed to see the data
 """
-spark.sql("SELECT * FROM powerplatform_administration_development_2.pyspark_learning.countries_population").display()
+spark.sql("SELECT * FROM workspace.pyspark_learning.countries_population").display()
 
 # COMMAND ----------
 
 """
 Create contry regions table
+First, get the path to the csv data
 """
-regions_path = '/Volumes/powerplatform_administration_development_2/powerplatform_administration/raw_data_files/pyspark/countries_dataset/csv_data/country_regions/country_regions.csv'
+regions_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/countries_dataset/csv_data/country_regions/country_regions.csv'
 
 
 
@@ -74,7 +77,9 @@ regions_path = '/Volumes/powerplatform_administration_development_2/powerplatfor
 
 """
 Create countries population schema
+
 """
+
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 
 regions_schema = StructType(
@@ -85,7 +90,7 @@ regions_schema = StructType(
 )
 
 # create data frame
-regions_df = spark.read.csv(regions_path, schema=regions_schema)
+regions_df = spark.read.csv(regions_path, header=True, schema=regions_schema)
 
 regions_df.display()
 
@@ -95,10 +100,10 @@ regions_df.display()
 create countries regions table and verify records
 """
 # create table
-regions_df.write.saveAsTable('powerplatform_administration_development_2.pyspark_learning.country_regions', mode='overwrite')
+regions_df.write.saveAsTable('workspace.pyspark_learning.country_regions', mode='overwrite')
 
 #verify table
-spark.sql("SELECT * FROM powerplatform_administration_development_2.pyspark_learning.country_regions").display()
+spark.sql("SELECT * FROM workspace.pyspark_learning.country_regions").display()
 
 # COMMAND ----------
 
@@ -107,7 +112,7 @@ Create countries sub regions table
 I will do this all in one cell
 """
 # set path to data
-sub_regions_path = '/Volumes/powerplatform_administration_development_2/powerplatform_administration/raw_data_files/pyspark/countries_dataset/csv_data/country_sub_regions/country_sub_regions.csv'
+sub_regions_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/countries_dataset/csv_data/country_sub_regions/country_sub_regions.csv'
 
 # create schema
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
@@ -120,13 +125,13 @@ sub_regions_schema = StructType(
 )
 
 # create dataframe
-sub_regions_df = spark.read.csv(sub_regions_path, schema=sub_regions_schema)
+sub_regions_df = spark.read.csv(sub_regions_path, header=True, schema=sub_regions_schema)
 
 # create table from dataframe
-sub_regions_df.write.saveAsTable('powerplatform_administration_development_2.pyspark_learning.country_sub_regions', mode='overwrite')
+sub_regions_df.write.saveAsTable('workspace.pyspark_learning.country_sub_regions', mode='overwrite')
 
 # verify table records
-spark.sql("SELECT * FROM powerplatform_administration_development_2.pyspark_learning.country_sub_regions").display()
+spark.sql("SELECT * FROM workspace.pyspark_learning.country_sub_regions").display()
 
 
 # COMMAND ----------
@@ -146,23 +151,27 @@ spark.sql("SELECT * FROM powerplatform_administration_development_2.pyspark_lear
 # COMMAND ----------
 
 """
-the select method on dataframe is similar to the spark.sql method for returning data. But it's used on dataframes, not tables
+set base table path
 """
-
-# read in countries population table and store in dataframe
-
-countries_df = spark.read.table('powerplatform_administration_development_2.pyspark_learning.countries_population')
+table_path = "workspace.pyspark_learning"
 
 # COMMAND ----------
 
 """
-Select by name returns a reference, not a column object.  This means you can display data, but not do data tansformations.
+the select method on dataframe is similar to the spark.sql method for returning data. The syntax is more pythonic
+"""
+
+# read in countries population table and store in dataframe
+
+countries_df = spark.read.table(f'{table_path}.countries_population')
+
+# COMMAND ----------
+
+"""
+Select by name returns a reference to the data, not a column object.  This means you can display data, but not do data tansformations.
 """
 # select by column name
 countries_df.select("country_id", "name", "population").display()
-# or
-# df_selected = countries_df.select("country_id", "name", "population")
-# df_selected.display()
 
 
 # COMMAND ----------
@@ -251,8 +260,23 @@ countries_df.select(
 # COMMAND ----------
 
 """
-selectExpr() can simplify this using SQL syntax
-in the expression below, upper is not the imported upper function, but the SQL syntax supplied 
+dot notation also returns column objects, so transformations can be applied to the column
+I think this is a more convenient way to do this
+"""
+
+countries_df.select(
+    countries_df.country_id, 
+    upper(countries_df.name).alias('country-name'), 
+    countries_df.population, 
+    countries_df.area_km2,
+    (countries_df.population / countries_df.area_km2).alias("population-density")
+).display()
+
+# COMMAND ----------
+
+"""
+SelectExpr() can simplify this expressions by using SQL syntax
+In the expression below, upper is not the imported upper function, but the SQL syntax supplied 
 NOTE:  dashes '-' are illegal in SQL, must use underscores '_'
 """
 
@@ -275,25 +299,29 @@ countries_df.selectExpr(
 """
 withColumn allows for the transformation of column data, one column at a time
 You can replace an existing column or add a column.  Format is (<name>, <operation)
-NOTE:  if the column acting upon already exists, then the column will be overwritten with 'new' data.  If the column does not exist, an additonal column will be created.
+
+NOTE:  if the column acting upon already exists, then the column will be overwritten with 'new' data.  If the column does not exist, an additonal column will be created and appended to the end of the table
 """
-from pyspark.sql.functions import upper
+from pyspark.sql.functions import upper, col
+
 countries_df.withColumn('name', upper('name')).display()
+
 
 # COMMAND ----------
 
 """
-Below, since 'country_name does not exist in the dataframe, a new column named country_name was created and added to the end
-The code below essentially says, "create a new column named 'country_name' from column 'name'".
+Below, since 'country_name does not already exist in the dataframe, a new column named country_name was created and added to the end of the table
+The code below essentially says, "create a new column named 'country_name' from column 'name'", in upper case.
 """
 countries_df.withColumn('country_name', upper('name')).display()
 
 # COMMAND ----------
 
 """
-Above, all columns are returned along with the additional column.
+In the examples above, all columns are returned along with the additional column.
 To select only a subsection of columns, combine the code above with a select statement
-NOTE: with column has to come before the select method
+NOTE: withColumn has to come before the select method
+Below we create a new 'country_name' column, then we select only the columns we wish to see
 """
 countries_df.withColumn('country_name', upper('name')).select('country_name', "country_code", "capital").display()
 
@@ -332,16 +360,32 @@ countries_df.withColumns(
 """
 Renaming columns
 1. alias()
+alias is used with select statements
+
+NOTE:  to rename in-place without select, use withColumnRenamed()
 NOTE:  requies bracket or dot notation as the column object must be available
 """
-countries_df.select(countries_df.name.alias("country_name")).\
-    select("country_name").display()
+countries_df.select(countries_df.name.alias("country_name")).display()
+
+# COMMAND ----------
+
+"""
+this code selects all columns and adds a column named 'country_name to the end of the table
+If I wanted to replace 'name' with 'country_name', I should use the withColumnRenamed() method.
+"""
+
+countries_df.select("*", countries_df.name.alias("country_name")).display()
+
+# COMMAND ----------
+
+countries_df.withColumnRenamed('name', 'country_name').display()
 
 # COMMAND ----------
 
 """
 Renaming columns
 2. withColumnRenamed()
+Below withColumnRenamed is used with select to return a subsection ofthe data
 """
 countries_df.withColumnRenamed('country_code', 'code').withColumnRenamed('country_id', 'id').\
     select('code', 'id').display()

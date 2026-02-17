@@ -1,9 +1,9 @@
 # Databricks notebook source
 # MAGIC %md
-# MAGIC # Notebook Contents
-# MAGIC - ## Math Functions
-# MAGIC - ## String Functions
-# MAGIC - ## Date and Time Functions
+# MAGIC ## Notebook Contents
+# MAGIC - ### Math Functions
+# MAGIC - ### String Functions
+# MAGIC - ### Date and Time Functions
 # MAGIC
 
 # COMMAND ----------
@@ -14,10 +14,15 @@
 
 # COMMAND ----------
 
+table_path = 'workspace.pyspark_learning'
+volume_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/'
+
+# COMMAND ----------
+
 """
 prepare by reading in the countries population table
 """
-countries_df = spark.read.table('powerplatform_administration_development_2.pyspark_learning.countries_population')
+countries_df = spark.read.table(f'{table_path}.countries_population')
 countries_df.display()
 
 # COMMAND ----------
@@ -25,7 +30,8 @@ countries_df.display()
 # DBTITLE 1,Cell 3
 """
 Basic math
-Example 1
+Example 1, multiplication
+Add a new column with population forcast, rounded
 """
 from pyspark.sql.functions import round
 # df_updated = df.withColumn("Number", F.round(df["Number"], 2))
@@ -40,7 +46,8 @@ countries_df.display()
 
 """
 Basic Math
-Example 2
+Example 2, division
+Add a new column with population density, rounded
 """
 countries_df = countries_df.withColumn('population_density', round(countries_df.population / countries_df.area_km2, 2))
 countries_df.display()
@@ -217,11 +224,12 @@ df.display()
 
 """
 Recreate the dataframe with the standard date format for hire_date
-"""
 
-"""
-Schema below is SQL syntax, does not use python objects
+Schema below is the ddl SQL syntax, does not use python objects
 data is a list of tuples
+
+since 'hire_date' exists (see schema), withColumn will overwrite the existing column with corrected date format data
+remember to_date function takes the current, incorrect date format as an argument,
 """
 from pyspark.sql.functions import col
 
@@ -281,7 +289,7 @@ df.withColumn("years_since_hired", timestamp_diff("YEAR", df.hire_date, df.curre
 # COMMAND ----------
 
 """
-Difference between curren_date and current_time_now
+Difference between current_date and current_time_now
 """
 df.withColumn("diff_in_times", timestamp_diff("MINUTE", df.current_date, df.current_time_now)).display()
 
@@ -293,7 +301,3 @@ Add or subtract days, use positive or negative numbers
 from pyspark.sql.functions import date_add
 
 df.withColumn("2 additional_days", date_add(df.current_date, 2)).display()
-
-# COMMAND ----------
-
-

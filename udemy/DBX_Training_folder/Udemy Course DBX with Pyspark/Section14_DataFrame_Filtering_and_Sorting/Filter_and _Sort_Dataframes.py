@@ -7,7 +7,7 @@
 """
 get data for this notebook
 """
-consolidated_df = spark.read.table("powerplatform_administration_development_2.pyspark_learning.countries_consolidated")
+consolidated_df = spark.read.table("workspace.pyspark_learning.countries_consolidated")
 consolidated_df.display()
 
 # COMMAND ----------
@@ -20,7 +20,7 @@ consolidated_df.where(consolidated_df.region == 'Asia').display()
 # COMMAND ----------
 
 """
-'filter' syntax is identical
+'filter' syntax is identical to 'where' syntax
 """
 consolidated_df.filter(consolidated_df.region == 'Asia').display()
 
@@ -147,7 +147,7 @@ dup_df.dropDuplicates(["name", "department"]).display()
 """
 get data for this notebook
 """
-consolidated_df = spark.read.table("powerplatform_administration_development_2.pyspark_learning.countries_consolidated")
+consolidated_df = spark.read.table("workspace.pyspark_learning.countries_consolidated")
 consolidated_df.display()
 
 # COMMAND ----------
@@ -185,6 +185,7 @@ consolidated_df.sort(consolidated_df.region, consolidated_df.population, ascendi
 
 """
 asc and desc methods
+requires the use of column objects
 mix and match!
 """
 consolidated_df.sort(consolidated_df.region.asc(), consolidated_df.population.desc()).display()
@@ -230,7 +231,7 @@ null_df.display()
 """
 dropna
 NOTE:  this is different than 'na.drop()' which I have used before
-drop all rows which have ANY nulls
+drop all rows which have ANY nulls in any column
 """
 null_df.dropna().display()
 
@@ -238,7 +239,7 @@ null_df.dropna().display()
 
 """
 dropna
-drop all rows which have at least one 'null' in any column
+drop all rows which have at least one 'null' on all columns, record id 5 is now gone
 """
 null_df.dropna(thresh=1).display()
 
@@ -246,7 +247,7 @@ null_df.dropna(thresh=1).display()
 
 """
 dropna
-drop all rows which have at least two 'null' in any column
+drop all rows which have at least two 'null' in any columns
 """
 null_df.dropna(thresh=2).display()
 

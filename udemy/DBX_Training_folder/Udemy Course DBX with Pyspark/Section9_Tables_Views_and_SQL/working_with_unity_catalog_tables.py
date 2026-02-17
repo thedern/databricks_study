@@ -55,10 +55,10 @@ spark.read.table('workspace.pyspark_learning.countries_table').display()
 """
 Can write that data frame back to the same table if use append or overwrite modes
 """
-country_table_df = spark.read.table('powerplatform_administration_development_2.powerplatform_administration.countries_table')
+country_table_df = spark.read.table('workspace.pyspark_learning.countries_table')
 # schema is written into the dataframe because the data has types assigned in the table
 country_table_df.dtypes
-country_table_df.write.saveAsTable('powerplatform_administration_development_2.powerplatform_administration.countries_table', mode="overwrite")
+country_table_df.write.saveAsTable('workspace.pyspark_learning.countries_table', mode="overwrite")
 
 # COMMAND ----------
 
@@ -75,7 +75,7 @@ SQL synatx as an argument to the pyspark API
 A dataframe is returned
 
 """
-spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table").display()
+spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table").display()
 
 # This is equivalent to:
 # spark.read.table('powerplatform_administration_development_2.powerplatform_administration.countries_table').display()
@@ -86,7 +86,7 @@ spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatfor
 
 # MAGIC %sql
 # MAGIC -- the cell above is the same as running this in a SQL cell
-# MAGIC SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table
+# MAGIC SELECT * FROM workspace.pyspark_learning.countries_table
 
 # COMMAND ----------
 
@@ -98,7 +98,7 @@ spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatfor
 
 # MAGIC %sql
 # MAGIC -- creates empty table with associated schema
-# MAGIC CREATE TABLE powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql
+# MAGIC CREATE TABLE workspace.pyspark_learning.countries_table_from_sql
 # MAGIC (
 # MAGIC   country_id INTEGER,
 # MAGIC   name STRING,
@@ -118,7 +118,7 @@ spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatfor
 The table is empty
 Read table to show this as TRUE
 """
-spark.sql('SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql').display()
+spark.sql('SELECT * FROM workspace.pyspark_learning.countries_table_from_sql').display()
 # spark.read.table('powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql').display()
 
 # COMMAND ----------
@@ -131,32 +131,32 @@ I will put both spark.sql and spark.read.table examples below
 """
 # 1. get data from countries_table and save to data frame
 
-country_table_df_1 = spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table")
-# country_table_df_1 = spark.read.table('powerplatform_administration_development_2.powerplatform_administration.countries_table')
+country_table_df_1 = spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table")
+# country_table_df_1 = spark.read.table('workspace.pyspark_learning.countries_table')
 
 # 2. write table from data frame to new table, countries_table_from_sql
-country_table_df_1.write.saveAsTable('powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql', mode='append')
+country_table_df_1.write.saveAsTable('workspace.pyspark_learning.countries_table_from_sql', mode='append')
 
 # 3. read contents of new table, countries_table_from_sql
-spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql").display()
-# spark.read.table('powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql').display()
+spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table_from_sql").display()
+# spark.read.table('workspace.pyspark_learning.countries_table_from_sql').display()
 
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC -- create table from results of select from another table
-# MAGIC CREATE TABLE powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql_2
+# MAGIC CREATE TABLE workspace.pyspark_learning.countries_table_from_sql_2
 # MAGIC AS
-# MAGIC SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql
+# MAGIC SELECT * FROM workspace.pyspark_learning.countries_table_from_sql
 
 # COMMAND ----------
 
 """
 Show contents of contries_table_from_sql_2
 """
-spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql_2").display()
-# spark.read.table('powerplatform_administration_development_2.powerplatform_administration.countries_table_from_sql_2').display()
+spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table_from_sql_2").display()
+# spark.read.table('workspace.pyspark_learning.countries_table_from_sql_2').display()
 
 # COMMAND ----------
 
@@ -168,21 +168,21 @@ spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatfor
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC CREATE VIEW powerplatform_administration_development_2.powerplatform_administration.countries_top_10 AS
-# MAGIC SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_table ORDER BY population DESC LIMIT 10
+# MAGIC CREATE VIEW workspace.pyspark_learning.countries_top_10 AS
+# MAGIC SELECT * FROM workspace.pyspark_learning.countries_table ORDER BY population DESC LIMIT 10
 
 # COMMAND ----------
 
 # MAGIC %sql
-# MAGIC SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_top_10
+# MAGIC SELECT * FROM workspace.pyspark_learning.countries_top_10
 
 # COMMAND ----------
 
 """
 Equivalent pyspark to the SQL above
 """
-# spark.sql("SELECT * FROM powerplatform_administration_development_2.powerplatform_administration.countries_top_10").display()
-spark.read.table("powerplatform_administration_development_2.powerplatform_administration.countries_top_10").display()
+# spark.sql("SELECT * FROM workspace.pyspark_learning.countries_top_10").display()
+spark.read.table("workspace.pyspark_learning.countries_top_10").display()
 
 # COMMAND ----------
 
@@ -201,14 +201,13 @@ spark.read.table("powerplatform_administration_development_2.powerplatform_admin
 
 # MAGIC %sql
 # MAGIC -- create a schema, syntax is catalog.schema name
-# MAGIC CREATE SCHEMA powerplatform_administration_development_2.pyspark_test_schema
+# MAGIC CREATE SCHEMA workspace.pyspark_test_schema
 
 # COMMAND ----------
 
 # MAGIC %sql
 # MAGIC -- create a volume under new schema, syntax is catalog.schema.volume
-# MAGIC -- I noticed the volume did not show up in the explorer on the left nave but was accessible in the right-hand pane.  As soon as I created a raw files sub directory, the volume and the subdirectory showed up in the left-explorer
-# MAGIC CREATE VOLUME powerplatform_administration_development_2.pyspark_test_schema.pyspark_test_volume
+# MAGIC CREATE VOLUME workspace.pyspark_test_schema.pyspark_test_volume
 
 # COMMAND ----------
 
@@ -229,12 +228,7 @@ spark.read.table("powerplatform_administration_development_2.powerplatform_admin
 # MAGIC -- must used CASCADE if not empty
 # MAGIC -- full namespace
 # MAGIC -- DROP SCHEMA <name> CASCADE
-# MAGIC DROP SCHEMA powerplatform_administration_development_2.pyspark_test_schema CASCADE
-
-# COMMAND ----------
-
-# MAGIC %sql
-# MAGIC DROP SCHEMA workspace.pyspark CASCADE
+# MAGIC DROP SCHEMA workspace.pyspark_test_schema CASCADE
 
 # COMMAND ----------
 
