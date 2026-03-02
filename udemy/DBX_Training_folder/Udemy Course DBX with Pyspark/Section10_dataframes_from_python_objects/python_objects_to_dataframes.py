@@ -71,6 +71,7 @@ df_dict.display()
 
 """
 You can convert any python data type to a data frame, even a tuple
+Below, a tuple of tuples
 """
 
 tuple_challenge = ((54, 'dave'), (18,'sandy'), (90, 'ed'))
