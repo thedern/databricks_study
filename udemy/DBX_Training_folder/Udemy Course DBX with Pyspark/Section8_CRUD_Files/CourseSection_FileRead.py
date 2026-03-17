@@ -5,7 +5,7 @@ dbutils.fs.ls("/Volumes/workspace/pyspark_learning/raw_files/pyspark/")
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Line above uses raw pythin dbutils object and its methods
+# MAGIC Line above uses raw python dbutils object and its methods
 # MAGIC
 # MAGIC Line below uses magic %fs method
 
