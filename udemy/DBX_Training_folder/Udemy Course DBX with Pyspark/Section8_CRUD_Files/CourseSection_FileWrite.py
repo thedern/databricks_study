@@ -1,4 +1,16 @@
 # Databricks notebook source
+# MAGIC %md
+# MAGIC # Writing Data
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC ### Data Prep Steps
+# MAGIC
+# MAGIC Data preparation steps for data writing exercises
+
+# COMMAND ----------
+
 # create schema
 from pyspark.sql.types import IntegerType, StringType, DoubleType, StructField, StructType
 countries_schema = StructType([
@@ -18,6 +30,7 @@ countries_schema = StructType([
 
 # COMMAND ----------
 
+# set path for convenience
 countries_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/countries_dataset/csv_data/countries_population/countries_population.csv'
 
 # COMMAND ----------
@@ -38,16 +51,29 @@ out_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/output_files/'
 
 # COMMAND ----------
 
-"""
-write back to my samples dir
-df, when written to csv, creates a set of files inside a folder called countries/
-Notice muliple metadata files are created along with the csv data file
+# MAGIC %md
+# MAGIC ## Writing data
+# MAGIC
+# MAGIC partition naming convention (how file names are created)
 
-NOTE:  the name of the csv created is controlled by the DBX system and cannot be overridden or user selected
+# COMMAND ----------
+
+"""
+write back to my samples directory
+dataframe, when written to csv, creates a set of files inside a folder called countries/
+Notice muliple metadata files are created along with the csv data file.
+
+
+NOTE: There multiple files because the cluster manager distributed the work over many nodes.
+Each node wrote part of the data
+
+NOTE:  The names of the csv files created are controlled by the DBX system and cannot be overridden or user selected
 The name is a combination of partion id and task id
 There are also task 'started' and task 'committend' files
 
 Like read, 'options' are available as well as a 'mode' method
+
+You can only name the folders the files are saved in
 """
 # Examples
 countries_df.write.csv(f'{out_path}/countries', header=True, mode='overwrite')
@@ -62,8 +88,17 @@ dbutils.fs.ls(f'{out_path}/countries')
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Magic command for listing directory
+
+# COMMAND ----------
+
+# MAGIC %fs ls '/Volumes/workspace/pyspark_learning/raw_files/pyspark/output_files/countries'
+
+# COMMAND ----------
+
 """
-You specifiy the delimiter as well
+With CSV You specifiy the delimiter in the output file as well
 the default is a comma, but below we are specifying a pipe '|'
 """
 countries_df.write.csv(f'{out_path}/countries', header=True, sep='|', mode='overwrite')
@@ -81,12 +116,18 @@ df_back_in.display()
 
 # MAGIC %md
 # MAGIC ## Partitioning Data
+# MAGIC
+# MAGIC You can control what data is written to which subdirectories via partitioning actions in the write action.
+# MAGIC
+# MAGIC You use the ```partitionBy``` method passing in a valid column name
 
 # COMMAND ----------
 
 """
 partioning breaks up large datasets for faster processing
+
 I can partition the data by column.
+
 In the example below I can partition the data frame in to regional subfolders under a subfolder named 'regions'
 """
 countries_df.write.partitionBy('REGION_ID').csv(f'{out_path}/countries/regions', header=True, mode='overwrite')
@@ -99,6 +140,7 @@ dbutils.fs.ls(f'{out_path}/countries/regions')
 
 """
 Can also partition and subpartition.  Here we partion by region and then partition region by sub-region
+This creates a nested file structure
 """
 countries_df.write.partitionBy('REGION_ID', 'SUB_REGION_ID').csv(f'{out_path}/countries/regions', header=True, mode='overwrite')
 
@@ -115,7 +157,11 @@ df_rebuild.display()
 
 """
 We can get a specific region alone by accessing its directory.
-NOTE: since there is onlt one csv in the directory, we can pass in the directory name alone.  If there were many csv's and we wanted a specific one, we need to include csv file name in path
+
+NOTE: since there is only one csv in the directory, we can pass in the directory name alone.  
+If there were many csv's and we wanted a specific one, we need to include csv file name in path
+
+Below we are loading all csv files in the region id 10 directory
 """
 df_region_10 = spark.read.csv(f'{out_path}/countries/regions/REGION_ID=10', header=True)
 df_region_10.display()

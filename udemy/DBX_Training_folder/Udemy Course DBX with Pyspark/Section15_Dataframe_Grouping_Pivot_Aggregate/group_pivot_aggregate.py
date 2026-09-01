@@ -9,7 +9,7 @@
 """
 Get data for this notebook
 """
-consolidated_df = spark.read.table('powerplatform_administration_development_2.pyspark_learning.countries_consolidated')
+consolidated_df = spark.read.table('workspace.pyspark_learning.countries_consolidated')
 
 # COMMAND ----------
 
@@ -30,6 +30,29 @@ NOTE: works by refernce.  I tried dot notation below and got an error.
 """
 from pyspark.sql.functions import sum
 consolidated_df.groupBy("region").sum("population").display()
+
+# COMMAND ----------
+
+grp_obj = consolidated_df.groupBy("region")
+print(type(grp_obj))
+
+# COMMAND ----------
+
+print(grp_obj.__dict__)
+
+# COMMAND ----------
+
+for key, value in grp_obj.__dict__.items():
+    print(key, value)
+
+# COMMAND ----------
+
+from pprint import pprint
+import inspect
+members = inspect.getmembers(grp_obj)
+methods = [name for name, obj in members if inspect.ismethod(obj) or inspect.isfunction(obj)]
+for method in methods:
+    pprint(method)
 
 # COMMAND ----------
 

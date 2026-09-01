@@ -6,6 +6,7 @@
 
 """
 Create some data from a list of lists
+Each sublist will be a record in the dataframe to be created
 """
 data_1 = [
     ["alice", 30, "london"],
@@ -19,6 +20,7 @@ data_1 = [
 """
 create a dataframe with no column mames
 column names will be underscores with numbers
+NOTE:  That datatypes were inferred
 """
 df_no_name = spark.createDataFrame(data_1)
 df_no_name.display()
@@ -26,8 +28,8 @@ df_no_name.display()
 # COMMAND ----------
 
 """
-create a dataframe with column names by adding a schema
-NOTE: the schema below is just column names, not data types.  DBX will infer the types
+create a new dataframe with column names by adding a schema
+NOTE: the schema below is just for column names, not data types.  DBX will infer the types as it did in the cell above
 """
 
 df_col_names = spark.createDataFrame(data_1, schema=["name", "age", "city"])
@@ -38,6 +40,8 @@ df_col_names.display()
 """
 Just like creating dataframe with a list of lists, one can
 create data via a list of dictionary objects
+Each dictionary will be a record in the dataframe
+Each key will be treated as the column name for the data
 """
 data_2 = [
     {"name": 'alice', 'age': 30, 'city': 'london'},
@@ -52,15 +56,16 @@ data_2 = [
 Below creates a 'typed' schema using ddl formating
 in ddl formatting the schema is list a comma delimited string
 """
-schema_1 = "name string, age integer, city string"
 
-df_col_names_2 = spark.createDataFrame(data_1, schema=schema_1)
+ddl_schema_1 = "name string, age integer, city string"
+
+df_col_names_2 = spark.createDataFrame(data_1, schema=ddl_schema_1)
 df_col_names_2.display()
 
 # COMMAND ----------
 
 """
-With a dict, the elements are key/value pairs so column names are determined by createDataFrame and it looking at the keys
+With a dict, the elements are key/value pairs so column names are determined by createDataFrame, and it looking at the keys
 NOTE: dbx will infer the types as no schema is provided
 """
 df_dict= spark.createDataFrame(data_2)
@@ -77,6 +82,6 @@ Below, a tuple of tuples
 tuple_challenge = ((54, 'dave'), (18,'sandy'), (90, 'ed'))
 print(type(tuple_challenge))
 
-schema_2 =  "age integer, name string"
+ddl_schema_2 =  "age integer, name string"
 
-spark.createDataFrame(tuple_challenge, schema=schema_2).display()
+spark.createDataFrame(tuple_challenge, schema=ddl_schema_2).display()

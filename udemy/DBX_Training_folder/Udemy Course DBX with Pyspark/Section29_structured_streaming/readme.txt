@@ -1,0 +1,1 @@
+Structured streaming cannot be done on free, serverless compute.  See work dev environment where general purpose compute can be utilized

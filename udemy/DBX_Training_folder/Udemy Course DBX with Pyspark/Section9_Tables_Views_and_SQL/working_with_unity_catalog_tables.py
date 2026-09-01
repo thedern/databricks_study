@@ -1,16 +1,26 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 # MAGIC %md
 # MAGIC ## Creating Managed Tables
 # MAGIC Managed tables are the default table type in DBX
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC ### Data Prep Steps
+
+# COMMAND ----------
+
+# create file path variable
 file_path = '/Volumes/workspace/pyspark_learning/raw_files/pyspark/countries_dataset/csv_data/countries_population/countries_population.csv'
 
 # COMMAND ----------
 
 """
-create schema for data types
+create python structType schema for data types
 create dataframe from csv file
 """
 from pyspark.sql.types import StructType, StructField, StringType, IntegerType
@@ -34,18 +44,26 @@ countries_df.display()
 
 # COMMAND ----------
 
-"""
-Save data frame as table, need to use the catalog.schema.table hierarchy
-saveAsTable
-Default is managed table type in with a data source in delta format
-NOTE: managed tables are always delta, you cannot change the format
-"""
-countries_df.write.saveAsTable('workspace.pyspark_learning.countries_table')
+# MAGIC %md
+# MAGIC #### Creating Tables from Dataframes
 
 # COMMAND ----------
 
 """
-to return the table as a data frame, use the read.table method
+Save data frame as table, need to use the catalog.schema.table hierarchy
+saveAsTable
+Default is managed table type in with a data source in delta format
+NOTE: managed tables are always delta, you cannot change the format from delta
+"""
+countries_df.write.saveAsTable('workspace.pyspark_learning.countries_table')
+
+# alternate 'writeTo' method below.  The createOrReplace method creates a new table
+# countries_df.writeTo('workspace.pyspark_learning.countries_table').createOrReplace()
+
+# COMMAND ----------
+
+"""
+to return the table as a dataframe, use the read.table method
 """
 spark.read.table('workspace.pyspark_learning.countries_table').display()
 
@@ -53,7 +71,7 @@ spark.read.table('workspace.pyspark_learning.countries_table').display()
 # COMMAND ----------
 
 """
-Can write that data frame back to the same table if use append or overwrite modes
+We can write that data frame back to the same table if use append or overwrite modes
 """
 country_table_df = spark.read.table('workspace.pyspark_learning.countries_table')
 # schema is written into the dataframe because the data has types assigned in the table
@@ -65,14 +83,15 @@ country_table_df.write.saveAsTable('workspace.pyspark_learning.countries_table',
 # MAGIC %md
 # MAGIC ## SQL Queries with pyspark
 # MAGIC
-# MAGIC Why would we do this and not just run the equivalent pyspark, `spark.read.table()`?
+# MAGIC Why would we use SQL and not just run the equivalent pyspark, `spark.read.table()`?
 # MAGIC Because, there are certain untity catalog operations for which there is no spark command and SQL must be used.
 
 # COMMAND ----------
 
 """
-SQL synatx as an argument to the pyspark API
-A dataframe is returned
+With sparl sql. SQL syntax is passed as an argument to the pyspark API
+A dataframe is returned to STDOUT
+NOTE: the cell type (top right) is 'python'
 
 """
 spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table").display()
@@ -86,6 +105,8 @@ spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table").display()
 
 # MAGIC %sql
 # MAGIC -- the cell above is the same as running this in a SQL cell
+# MAGIC -- NOTE:  the cell type (top right) is SQL
+# MAGIC -- the result is automatically returned to STDOUT
 # MAGIC SELECT * FROM workspace.pyspark_learning.countries_table
 
 # COMMAND ----------
@@ -123,6 +144,11 @@ spark.sql('SELECT * FROM workspace.pyspark_learning.countries_table_from_sql').d
 
 # COMMAND ----------
 
+# MAGIC %md
+# MAGIC #### Insert Records By Appending To Existing Table
+
+# COMMAND ----------
+
 """
 Insert data
 To do this, I will read from our first countries table and insert into the new table
@@ -141,6 +167,11 @@ country_table_df_1.write.saveAsTable('workspace.pyspark_learning.countries_table
 spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table_from_sql").display()
 # spark.read.table('workspace.pyspark_learning.countries_table_from_sql').display()
 
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC #### Create a New Table from Query Results of Existing Table
 
 # COMMAND ----------
 
@@ -164,10 +195,13 @@ spark.sql("SELECT * FROM workspace.pyspark_learning.countries_table_from_sql_2")
 # MAGIC ## Create Views with SQL
 # MAGIC A view is a read only object as a result of a select over one or more existing tables or other views.
 # MAGIC These are persistent objects
+# MAGIC
+# MAGIC - NOTE:  These are very handy for PowerBi Reports.  Moves data cleaning closest to source and shifts the processing off of PowerBi
 
 # COMMAND ----------
 
 # MAGIC %sql
+# MAGIC -- uses the same syntax as creating a table from a query result but simply replaces 'table' with 'view'
 # MAGIC CREATE VIEW workspace.pyspark_learning.countries_top_10 AS
 # MAGIC SELECT * FROM workspace.pyspark_learning.countries_table ORDER BY population DESC LIMIT 10
 
